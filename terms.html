@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terms of Service | cade.is cool</title>
+    <style>
+      :root {
+        --bg: #000000;
+        --panel: #121212;
+        --line: rgba(255, 255, 255, 0.12);
+        --yellow: #f3d350;
+        --text: #f4f4f4;
+        --muted: rgba(255, 255, 255, 0.72);
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        width: 100%;
+        min-height: 100%;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .topbar {
+        width: 100%;
+        height: 104px;
+        background: #0c0c0c;
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 28px 0 24px;
+      }
+
+      .brand {
+        color: var(--yellow);
+        text-decoration: none;
+        font-size: clamp(2.2rem, 4vw, 4rem);
+        line-height: 1;
+        letter-spacing: -0.08em;
+        font-weight: 800;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+
+      .nav a,
+      .nav button {
+        appearance: none;
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--text);
+        text-decoration: none;
+        font-size: 0.8rem;
+        letter-spacing: 0.04em;
+        text-transform: lowercase;
+        padding: 10px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+
+      .nav .account {
+        color: var(--yellow);
+        border-color: rgba(243, 211, 80, 0.45);
+      }
+
+      .content {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 48px 24px 80px;
+      }
+
+      .terms {
+        border: 1px solid var(--line);
+        background: rgba(18, 18, 18, 0.9);
+        padding: 28px 24px;
+      }
+
+      h1 {
+        margin: 0 0 24px;
+        color: var(--yellow);
+        font-size: clamp(2.3rem, 5vw, 4rem);
+        letter-spacing: -0.06em;
+        line-height: 0.9;
+      }
+
+      .terms p {
+        margin: 0 0 1.1em;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.75;
+      }
+
+      .terms strong {
+        color: var(--text);
+      }
+
+      @media (max-width: 680px) {
+        .topbar {
+          height: auto;
+          flex-direction: column;
+          justify-content: center;
+          gap: 12px;
+          padding: 18px 16px;
+        }
+
+        .nav {
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <a href="index.html" class="brand">cade.is cool</a>
+
+      <nav class="nav" aria-label="Main navigation">
+        <a href="index.html">home</a>
+        <a href="about.html">about me</a>
+        <a href="terms.html">terms of service</a>
+        <button class="account" type="button" aria-label="Account">account</button>
+      </nav>
+    </header>
+
+    <main class="content">
+      <article class="terms">
+        <h1>terms of service</h1>
+
+        <p><strong>Last updated: October 2026</strong></p>
+
+        <p><strong>1. Acceptance of Terms</strong><br />
+        By visiting cade.is or any of its subpaths, you agree to these terms. If you do not agree,
+        you are free to close the tab and wander elsewhere on the internet.</p>
+
+        <p><strong>2. The Sandbox and Code Execution</strong><br />
+        The features available on cade.is/hackable and related interactive routes run locally inside your
+        own browser window. You are welcome to inspect, modify, and break the DOM or run scripts. None
+        of these changes affect other visitors or permanent site infrastructure, and a standard page
+        refresh will restore everything to normal. Do not attempt to exploit, bypass rate limits on, or
+        flood the backend serverless endpoints.</p>
+
+        <p><strong>3. Pings and Communication</strong><br />
+        Using interactive triggers like cade.is/gonnablockyou sends a digital signal to the site operator.
+        Do not use automated scripts, bots, or malicious payloads to spam the notification routing.
+        Abuse will result in actual IP or rate-limit blocking.</p>
+
+        <p><strong>4. Intellectual Property and Open Source</strong><br />
+        Original code, writing, and design elements on this site are created by Cade. Projects or snippets
+        marked as borrowed or forked remain subject to their respective original licenses. You may learn
+        from, reference, or adapt open-source components, but do not misrepresent proprietary design assets
+        as your own.</p>
+
+        <p><strong>5. Disclaimer of Warranties</strong><br />
+        This website is provided "as is" and "as available" without any warranty of any kind, express or
+        implied. The site operator is not responsible for any broken layouts, un-saved client-side
+        experiments, lost productivity, or confusion caused by experimental web toys.</p>
+
+        <p><strong>6. Limitation of Liability</strong><br />
+        In no event shall the site operator be liable for any direct, indirect, incidental, or consequential
+        damages arising out of your use of—or inability to use—this website.</p>
+
+        <p><strong>7. Changes to These Terms</strong><br />
+        These terms may be updated at any time. Continued use of the site after an update means you accept
+        the revised text.</p>
+      </article>
+    </main>
+  </body>
+</html>
