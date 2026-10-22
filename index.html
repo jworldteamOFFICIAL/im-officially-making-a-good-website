@@ -7,72 +7,120 @@
     <style>
       :root {
         --bg: #000000;
-        --bar: #0a0a0a;
+        --panel: #121212;
         --line: rgba(255, 255, 255, 0.12);
-        --yellow: #f5d742;
+        --yellow: #f3d350;
+        --text: #f4f4f4;
+        --muted: rgba(255, 255, 255, 0.72);
       }
 
-      * {
-        box-sizing: border-box;
-      }
+      * { box-sizing: border-box; }
 
       html, body {
         margin: 0;
         width: 100%;
-        height: 100%;
+        min-height: 100%;
         background: var(--bg);
-        color: var(--yellow);
+        color: var(--text);
         font-family: Arial, Helvetica, sans-serif;
       }
 
       body {
-        display: flex;
-        flex-direction: column;
+        min-height: 100vh;
       }
 
       .topbar {
-        height: 58px;
+        width: 100%;
+        height: 104px;
+        background: #0c0c0c;
         border-bottom: 1px solid var(--line);
-        background: var(--bar);
         display: flex;
         align-items: center;
-        justify-content: center;
-        padding: 0 20px;
+        justify-content: space-between;
+        padding: 0 28px 0 24px;
       }
 
-      .topbar .brand {
-        font-size: 1.1rem;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: lowercase;
+      .brand {
         color: var(--yellow);
-      }
-
-      .main {
-        flex: 1;
-        display: grid;
-        place-items: center;
-        padding: 30px 20px;
-      }
-
-      .title {
-        margin: 0;
-        font-size: clamp(2.5rem, 8vw, 8rem);
-        line-height: 0.9;
+        text-decoration: none;
+        font-size: clamp(2.2rem, 4vw, 4rem);
+        line-height: 1;
         letter-spacing: -0.08em;
         font-weight: 800;
-        text-align: center;
+      }
+
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+
+      .nav a,
+      .nav button {
+        appearance: none;
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--text);
+        text-decoration: none;
+        font-size: 0.8rem;
+        letter-spacing: 0.04em;
+        text-transform: lowercase;
+        padding: 10px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: border-color 0.15s ease, color 0.15s ease;
+      }
+
+      .nav a:hover,
+      .nav button:hover {
+        border-color: rgba(243, 211, 80, 0.5);
         color: var(--yellow);
+      }
+
+      .nav .account {
+        color: var(--yellow);
+        border-color: rgba(243, 211, 80, 0.45);
+      }
+
+      .page {
+        min-height: calc(100vh - 104px);
+        background: black;
+      }
+
+      .blank {
+        min-height: calc(100vh - 104px);
+      }
+
+      @media (max-width: 680px) {
+        .topbar {
+          height: auto;
+          flex-direction: column;
+          justify-content: center;
+          gap: 12px;
+          padding: 18px 16px;
+        }
+
+        .nav {
+          justify-content: center;
+        }
       }
     </style>
   </head>
   <body>
     <header class="topbar">
-      <div class="brand">cade.is cool</div>
+      <a href="index.html" class="brand">cade.is cool</a>
+
+      <nav class="nav" aria-label="Main navigation">
+        <a href="index.html">home</a>
+        <a href="about.html">about me</a>
+        <a href="terms.html">terms of service</a>
+        <button class="account" type="button" aria-label="Account">account</button>
+      </nav>
     </header>
 
-    <main class="main">
-      <h1 class="title">cade.is cool</h1>
+    <main class="page">
+      <div class="blank" aria-label="Homepage blank section"></div>
     </main>
   </body>
 </html>
