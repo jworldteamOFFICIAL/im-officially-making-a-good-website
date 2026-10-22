@@ -89,24 +89,9 @@
         width: 100%;
         min-height: 620px;
         border: 1px solid var(--line);
-        background:
-          linear-gradient(135deg, rgba(243, 211, 80, 0.08), rgba(255,255,255,0.02)),
-          radial-gradient(circle at 30% 30%, rgba(255,255,255,0.22), transparent 28%),
-          linear-gradient(180deg, #1c1c1c 0%, #0b0b0b 100%);
-        position: relative;
-        overflow: hidden;
-      }
-
-      .portrait::before {
-        content: "portrait slot";
-        position: absolute;
-        inset: 0;
-        display: grid;
-        place-items: center;
-        font-size: 1.1rem;
-        letter-spacing: 0.16em;
-        text-transform: lowercase;
-        color: rgba(255,255,255,0.42);
+        background: #111;
+        display: block;
+        object-fit: cover;
       }
 
       .text h1 {
@@ -164,7 +149,7 @@
 
     <main class="content">
       <section class="about-grid">
-        <div class="portrait" aria-label="Portrait placeholder"></div>
+        <img class="portrait" src="assets/cade-portrait.jpg" alt="Cade portrait" />
 
         <div class="text">
           <h1>about me</h1>
