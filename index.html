@@ -12,6 +12,7 @@
         --grid: rgba(255, 255, 255, 0.045);
         --line: rgba(255, 255, 255, 0.12);
         --yellow: #f3d350;
+        --orange: #f97316;
         --text: #f4f4f4;
         --muted: rgba(255, 255, 255, 0.72);
       }
@@ -25,10 +26,24 @@
         background: var(--bg);
         color: var(--text);
         font-family: Arial, Helvetica, sans-serif;
+        overflow-x: hidden;
       }
 
-      body {
-        min-height: 100vh;
+      /* Fixed background arcade canvas sits behind everything */
+      #arcade-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      /* Elevate interactive UI above canvas */
+      .topbar, .main, #arcade-hud {
+        position: relative;
+        z-index: 10;
       }
 
       .topbar {
@@ -120,6 +135,22 @@
         color: var(--muted);
       }
 
+      #arcade-hud {
+        position: fixed;
+        bottom: 16px;
+        right: 16px;
+        font-family: monospace;
+        font-size: 12px;
+        color: var(--yellow);
+        background: rgba(12, 12, 12, 0.88);
+        border: 1px solid var(--line);
+        padding: 6px 12px;
+        border-radius: 6px;
+        display: none;
+        pointer-events: none;
+        letter-spacing: 0.05em;
+      }
+
       @media (max-width: 680px) {
         .topbar {
           height: auto;
@@ -136,6 +167,9 @@
     </style>
   </head>
   <body>
+    <canvas id="arcade-bg"></canvas>
+    <div id="arcade-hud">SCORE: 0 // [ TO EXIT</div>
+
     <header class="topbar">
       <a href="index.html" class="brand">cade.is cool</a>
 
@@ -155,5 +189,145 @@
         </p>
       </div>
     </main>
+
+    <script>
+      const canvas = document.getElementById('arcade-bg');
+      const ctx = canvas.getContext('2d');
+      const hud = document.getElementById('arcade-hud');
+
+      let width = (canvas.width = window.innerWidth);
+      let height = (canvas.height = window.innerHeight);
+
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+
+      let running = false;
+      let score = 0;
+      let animId = null;
+
+      const player = {
+        x: width / 2,
+        y: height / 2,
+        size: 16,
+        speed: 5.5,
+        vx: 0,
+        vy: 0
+      };
+
+      const keys = {};
+      const threats = [];
+      const threatColors = ['#f3d350', '#f97316', '#ffffff']; // Yellow, Orange, White
+
+      window.addEventListener('keydown', (e) => {
+        if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+
+        if (e.key === '[') {
+          e.preventDefault();
+          running = !running;
+          if (running) {
+            player.x = width / 2;
+            player.y = height / 2;
+            player.vx = 0;
+            player.vy = 0;
+            threats.length = 0;
+            score = 0;
+            hud.style.display = 'block';
+            hud.textContent = `SCORE: 0 // [ TO EXIT`;
+            loop();
+          } else {
+            hud.style.display = 'none';
+            cancelAnimationFrame(animId);
+            ctx.clearRect(0, 0, width, height);
+          }
+          return;
+        }
+
+        if (running) {
+          keys[e.key.toLowerCase()] = true;
+        }
+      });
+
+      window.addEventListener('keyup', (e) => {
+        if (running) {
+          keys[e.key.toLowerCase()] = false;
+        }
+      });
+
+      function spawnThreat() {
+        const side = Math.floor(Math.random() * 4);
+        let tx, ty, vx, vy;
+        const spd = 2.2 + Math.random() * 3.2 + score / 350;
+
+        if (side === 0) { tx = Math.random() * width; ty = -24; }
+        else if (side === 1) { tx = width + 24; ty = Math.random() * height; }
+        else if (side === 2) { tx = Math.random() * width; ty = height + 24; }
+        else { tx = -24; ty = Math.random() * height; }
+
+        const angle = Math.atan2(player.y - ty, player.x - tx) + (Math.random() - 0.5) * 0.45;
+        vx = Math.cos(angle) * spd;
+        vy = Math.sin(angle) * spd;
+
+        threats.push({
+          x: tx,
+          y: ty,
+          size: 9 + Math.random() * 11,
+          vx: vx,
+          vy: vy,
+          color: threatColors[Math.floor(Math.random() * threatColors.length)]
+        });
+      }
+
+      function loop() {
+        if (!running) return;
+
+        score += 0.16;
+        hud.textContent = `SCORE: ${Math.floor(score)} // [ TO EXIT`;
+
+        // Clear transparent so your CSS background grid shows through
+        ctx.clearRect(0, 0, width, height);
+
+        // Player update (WASD / Arrows)
+        player.vx = 0;
+        player.vy = 0;
+        if (keys['arrowup'] || keys['w']) player.vy -= player.speed;
+        if (keys['arrowdown'] || keys['s']) player.vy += player.speed;
+        if (keys['arrowleft'] || keys['a']) player.vx -= player.speed;
+        if (keys['arrowright'] || keys['d']) player.vx += player.speed;
+
+        player.x = Math.max(player.size, Math.min(width - player.size, player.x + player.vx));
+        player.y = Math.max(player.size, Math.min(height - player.size, player.y + player.vy));
+
+        if (Math.random() < 0.055) spawnThreat();
+
+        for (let i = threats.length - 1; i >= 0; i--) {
+          const t = threats[i];
+          t.x += t.vx;
+          t.y += t.vy;
+
+          ctx.fillStyle = t.color;
+          ctx.fillRect(t.x - t.size / 2, t.y - t.size / 2, t.size, t.size);
+
+          const dx = player.x - t.x;
+          const dy = player.y - t.y;
+          if (Math.sqrt(dx * dx + dy * dy) < (player.size / 2 + t.size / 2)) {
+            running = false;
+            hud.textContent = `CRASHED AT ${Math.floor(score)} // PRESS [ TO RETRY`;
+            return;
+          }
+
+          if (t.x < -120 || t.x > width + 120 || t.y < -120 || t.y > height + 120) {
+            threats.splice(i, 1);
+          }
+        }
+
+        // Draw Player square
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(player.x - player.size / 2, player.y - player.size / 2, player.size, player.size);
+
+        animId = requestAnimationFrame(loop);
+      }
+    </script>
   </body>
 </html>
