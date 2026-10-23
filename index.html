@@ -7,7 +7,9 @@
     <style>
       :root {
         --bg: #000000;
-        --panel: #121212;
+        --panel: #111111;
+        --panel-soft: #181818;
+        --grid: rgba(255, 255, 255, 0.045);
         --line: rgba(255, 255, 255, 0.12);
         --yellow: #f3d350;
         --text: #f4f4f4;
@@ -83,13 +85,39 @@
         border-color: rgba(243, 211, 80, 0.45);
       }
 
-      .page {
+      .main {
         min-height: calc(100vh - 104px);
-        background: black;
+        background: linear-gradient(180deg, var(--panel-soft) 0%, var(--panel) 100%);
+        background-image:
+          linear-gradient(var(--grid) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+        background-size: 32px 32px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 52px 24px 80px;
       }
 
-      .blank {
-        min-height: calc(100vh - 104px);
+      .content {
+        width: min(100%, 980px);
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0;
+        color: var(--yellow);
+        font-size: clamp(3rem, 7vw, 8rem);
+        line-height: 0.9;
+        letter-spacing: -0.08em;
+        font-weight: 800;
+      }
+
+      .subtitle {
+        margin: 18px auto 0;
+        max-width: 700px;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        color: var(--muted);
       }
 
       @media (max-width: 680px) {
@@ -119,8 +147,13 @@
       </nav>
     </header>
 
-    <main class="page">
-      <div class="blank" aria-label="Homepage blank section"></div>
+    <main class="main">
+      <div class="content">
+        <h1>cade.is cool</h1>
+        <p class="subtitle">
+          welcome to my stupid website. still working on adding more projects, but tell your friends about this
+        </p>
+      </div>
     </main>
   </body>
 </html>
