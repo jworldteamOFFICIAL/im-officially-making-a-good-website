@@ -1,61 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>clarinet.cade</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cade.run/clarinet</title>
     <style>
-      :root {
-        --bg: #000000;
-        --panel: #111111;
-        --text: #f4f4f4;
-        --muted: rgba(255,255,255,0.7);
-        --line: rgba(255,255,255,0.12);
-      }
+        :root {
+            --bg: #000000;
+            --panel: #111111;
+            --yellow: #f3d350;
+            --orange: #f97316;
+            --cyan: #38bdf8;
+            --red: #ef4444;
+            --text: #f4f4f4;
+            --muted: #71717a;
+            --line: rgba(255, 255, 255, 0.12);
+        }
 
-      * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-      html, body {
-        margin: 0;
-        min-height: 100%;
-        background: var(--bg);
-        color: var(--text);
-        font-family: Arial, Helvetica, sans-serif;
-      }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 32px 16px;
+        }
 
-      body {
-        display: grid;
-        place-items: center;
-        min-height: 100vh;
-        padding: 32px;
-      }
+        header { text-align: center; }
+        header a { color: var(--muted); text-decoration: none; font-family: monospace; font-size: 0.85rem; }
+        header a:hover { color: var(--yellow); }
+        h1 { font-size: 2.5rem; color: var(--yellow); margin-top: 8px; letter-spacing: -0.04em; }
+        p { color: var(--muted); font-size: 0.95rem; margin-top: 6px; }
 
-      .placeholder {
-        width: min(100%, 700px);
-        border: 1px solid var(--line);
-        background: var(--panel);
-        border-radius: 18px;
-        padding: 32px;
-        text-align: center;
-      }
+        .instrument-container {
+            width: 100%;
+            max-width: 920px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
 
-      h1 {
-        margin: 0 0 12px;
-        font-size: clamp(2rem, 5vw, 4rem);
-        letter-spacing: -0.06em;
-      }
+        .status-banner {
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: var(--cyan);
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-align: center;
+        }
 
-      p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 1rem;
-      }
+        /* 9-column key grid for A through L */
+        .keys-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 8px;
+        }
+
+        @media (max-width: 760px) {
+            .keys-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .key-btn {
+            background: #18181b;
+            border: 1px solid var(--line);
+            color: var(--text);
+            padding: 20px 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            user-select: none;
+            transition: all 0.08s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .key-btn:hover, .key-btn.active {
+            background: var(--yellow);
+            color: #000;
+            border-color: var(--yellow);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(243, 211, 80, 0.25);
+        }
+
+        .key-btn .note-label { font-size: 1.05rem; font-weight: 800; font-family: monospace; }
+        .key-btn .shortcut { font-family: monospace; font-size: 0.7rem; opacity: 0.6; }
+        .key-btn:hover .shortcut, .key-btn.active .shortcut { opacity: 0.9; }
+
+        footer { font-family: monospace; font-size: 0.75rem; color: var(--muted); text-align: center; }
     </style>
-  </head>
-  <body>
-    <main class="placeholder">
-      <h1>clarinet.cade</h1>
-      <p>blank for now — content coming soon.</p>
+</head>
+<body>
+
+    <header>
+        <a href="index.html">&larr; back to cade.run</a>
+        <h1>cade.run/clarinet</h1>
+        <p>9 sampled notes (Low to High). Hold keys A–L or click buttons. Auto synth fallback if audio files are missing.</p>
+    </header>
+
+    <main class="instrument-container">
+        <div class="status-banner" id="audio-status">CLICK ANY KEY TO INITIALIZE AUDIO ENGINE</div>
+        <div class="keys-grid" id="keys-container"></div>
     </main>
-  </body>
-</html>
+
+    <footer>
+        Press [ or ] to trigger background arcade simulation anytime.
+    </footer>
+
+    <script>
+        // Mapped lowest (Note 1) to highest (Note 9) across A-L
+        const INSTRUMENT_NOTES = [
+            { id: 1, label: '01', key: 'a', freq: 196.00, file: 'audio/note1.wav' },
+            { id: 2, label: '02', key: 's', freq: 220.00, file: 'audio/note2.wav' },
+            { id: 3, label: '03', key: 'd', freq: 246.94, file: 'audio/note3.wav' },
+            { id: 4, label: '04', key: 'f', freq: 261.63, file: 'audio/note4.wav' },
+            { id: 5, label: '05', key: 'g', freq: 293.66, file: 'audio/note5.wav' },
+            { id: 6, label: '06', key: 'h', freq: 329.63, file: 'audio/note6.wav' },
+            { id: 7, label: '07', key: 'j', freq: 349.23, file: 'audio/note7.wav' },
+            { id: 8, label: '08', key: 'k', freq: 392.00, file: 'audio/note8.wav' },
+            { id: 9, label: '09', key: 'l', freq: 440.00, file: 'audio/note9.wav' }
+        ];
+
+        let audioCtx = null;
+        const buffers = {};
+        const activeVoices = {};
+        const statusBanner = document.getElementById('audio-status');
+        const keysContainer = document.getElementById('keys-container');
+
+        function initAudioContext() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        async function loadSamples() {
+            let loadedCount = 0;
+            for (let item of INSTRUMENT_NOTES) {
+                try {
+                    const response = await fetch(item.file);
+                    if (!response.ok) throw new Error('Not found');
+                    const arrayBuffer = await response.arrayBuffer();
+                    buffers[item.id] = await audioCtx.decodeAudioData(arrayBuffer);
+                    loadedCount++;
+                } catch (e) {
+                    buffers[item.id] = null;
+                }
+            }
+            statusBanner.textContent = loadedCount > 0 
+                ? `READY (${loadedCount}/9 REAL CLARINET SAMPLES LOADED)` 
+                : `SYNTHESIS MODE ACTIVE (PLACE note1.wav – note9.wav IN /audio/ FOLDER)`;
+        }
+
+        // Closed-pipe cylinder clarinet synthesis model (odd harmonics + warm lowpass)
+        function playSynthNote(freq) {
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const subOsc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(freq, now);
+
+            subOsc.type = 'triangle';
+            subOsc.frequency.setValueAtTime(freq, now);
+
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(freq * 2.8, now);
+            filter.Q.setValueAtTime(2.5, now);
+
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.linearRampToValueAtTime(0.2, now + 0.07);
+
+            const mixGain = audioCtx.createGain();
+            mixGain.gain.value = 0.45;
+
+            osc.connect(filter);
+            subOsc.connect(mixGain);
+            mixGain.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start(now);
+            subOsc.start(now);
+            return { osc, subOsc, gain };
+        }
+
+        function noteOn(item, btnEl) {
+            initAudioContext();
+            const keyLower = item.key.toLowerCase();
+            if (activeVoices[keyLower]) return;
+
+            btnEl.classList.add('active');
+
+            if (buffers[item.id]) {
+                const source = audioCtx.createBufferSource();
+                const gain = audioCtx.createGain();
+                source.buffer = buffers[item.id];
+                gain.gain.value = 0.95;
+                source.connect(gain);
+                gain.connect(audioCtx.destination);
+                source.start(0);
+                activeVoices[keyLower] = { source, gain, type: 'sample' };
+            } else {
+                activeVoices[keyLower] = { ...playSynthNote(item.freq), type: 'synth' };
+            }
+        }
+
+        function noteOff(item, btnEl) {
+            const keyLower = item.key.toLowerCase();
+            const voice = activeVoices[keyLower];
+            btnEl.classList.remove('active');
+            if (!voice || !audioCtx) return;
+
+            const now = audioCtx.currentTime;
+            voice.gain.gain.cancelScheduledValues(now);
+            voice.gain.gain.setValueAtTime(voice.gain.gain.value, now);
+            voice.gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+
+            setTimeout(() => {
+                if (voice.type === 'sample' && voice.source) {
+                    try { voice.source.stop(); } catch(e){}
+                } else if (voice.type === 'synth') {
+                    try { voice.osc.stop(); } catch(e){}
+                    try { voice.subOsc.stop(); } catch(e){}
+                }
+            }, 100);
+
+            delete activeVoices[keyLower];
+        }
+
+        INSTRUMENT_NOTES.forEach(item => {
+            const btn = document.createElement('div');
+            btn.className = 'key-btn';
+            btn.innerHTML = `
+                <span class="note-label">#${item.label}</span>
+                <span class="shortcut">[${item.key.toUpperCase()}]</span>
+            `;
+
+            btn.addEventListener('mousedown', (e) => { e.preventDefault(); noteOn(item, btn); });
+            btn.addEventListener('mouseup', () => noteOff(item, btn));
+            btn.addEventListener('mouseleave', () => noteOff(item, btn));
+            btn.addEventListener('touchstart', (e) => { e.preventDefault(); noteOn(item, btn); });
+            btn.addEventListener('touchend', () => noteOff(item, btn));
+
+            keysContainer.appendChild(btn);
+            item.element = btn;
+        });
+
+        const keyMap = {};
