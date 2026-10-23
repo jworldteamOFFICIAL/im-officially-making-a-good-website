@@ -114,6 +114,9 @@
 
       .content {
         width: min(100%, 980px);
+      }
+
+      .hero {
         text-align: center;
       }
 
@@ -132,6 +135,40 @@
         font-size: 1.05rem;
         line-height: 1.7;
         color: var(--muted);
+      }
+
+      .projects-section {
+        margin-top: 72px;
+        width: min(100%, 500px);
+        text-align: left;
+      }
+
+      .projects-section h2 {
+        margin: 0 0 18px;
+        color: var(--yellow);
+        font-size: clamp(1.6rem, 2.5vw, 2.6rem);
+        letter-spacing: -0.05em;
+        line-height: 1.1;
+        font-weight: 800;
+      }
+
+      .project-button {
+        display: inline-block;
+        padding: 16px 22px;
+        border: 1px solid rgba(255, 99, 99, 0.7);
+        background: rgba(239, 68, 68, 0.12);
+        color: #ffd8d8;
+        text-decoration: none;
+        border-radius: 12px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+      }
+
+      .project-button:hover {
+        transform: translateY(-1px);
+        background: rgba(239, 68, 68, 0.18);
+        border-color: rgba(255, 99, 99, 1);
       }
 
       #arcade-hud {
@@ -163,6 +200,10 @@
         .nav {
           justify-content: center;
         }
+
+        .projects-section {
+          margin-top: 56px;
+        }
       }
     </style>
   </head>
@@ -183,10 +224,17 @@
 
     <main class="main">
       <div class="content">
-        <h1>cade.is cool</h1>
-        <p class="subtitle">
-          welcome to my stupid website. still working on adding more projects, but tell your friends about this
-        </p>
+        <div class="hero">
+          <h1>cade.is cool</h1>
+          <p class="subtitle">
+            welcome to my stupid website. still working on adding more projects, but tell your friends about this
+          </p>
+        </div>
+
+        <section class="projects-section" aria-label="Projects section">
+          <h2>explore projects</h2>
+          <a class="project-button" href="clarinet.cade.html" target="_blank" rel="noopener noreferrer">clarinet.cade</a>
+        </section>
       </div>
     </main>
 
@@ -353,3 +401,29 @@
             const t = threats[i];
 
             const angle = Math.atan2(player.y - t.y, player.x - t.x);
+            t.x += Math.cos(angle) * t.speed;
+            t.y += Math.sin(angle) * t.speed;
+
+            if (checkCollision(player.x, player.y, player.size, t.x, t.y, t.size)) {
+              stopGame(`GAME OVER // PRESS [ TO PLAY AGAIN`);
+              return;
+            }
+
+            ctx.beginPath();
+            ctx.arc(t.x, t.y, t.size / 2, 0, Math.PI * 2);
+            ctx.fillStyle = t.color;
+            ctx.fill();
+          }
+
+          // Draw player
+          ctx.beginPath();
+          ctx.arc(player.x, player.y, player.size / 2, 0, Math.PI * 2);
+          ctx.fillStyle = '#ef4444';
+          ctx.fill();
+
+          animId = requestAnimationFrame(loop);
+        }
+      })();
+    </script>
+  </body>
+</html>
