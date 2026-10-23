@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>clarinet.cade</title>
+    <style>
+      :root {
+        --bg: #000000;
+        --panel: #111111;
+        --text: #f4f4f4;
+        --muted: rgba(255,255,255,0.7);
+        --line: rgba(255,255,255,0.12);
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        min-height: 100%;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      body {
+        display: grid;
+        place-items: center;
+        min-height: 100vh;
+        padding: 32px;
+      }
+
+      .placeholder {
+        width: min(100%, 700px);
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 18px;
+        padding: 32px;
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(2rem, 5vw, 4rem);
+        letter-spacing: -0.06em;
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="placeholder">
+      <h1>clarinet.cade</h1>
+      <p>blank for now — content coming soon.</p>
+    </main>
+  </body>
+</html>
