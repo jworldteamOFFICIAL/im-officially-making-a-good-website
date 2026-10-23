@@ -30,7 +30,6 @@
         overflow-x: hidden;
       }
 
-      /* Fixed background arcade canvas sits behind everything */
       #arcade-bg {
         position: fixed;
         top: 0;
@@ -41,7 +40,6 @@
         pointer-events: none;
       }
 
-      /* Elevate interactive UI above canvas */
       .topbar, .main, #arcade-hud {
         position: relative;
         z-index: 10;
@@ -147,9 +145,10 @@
         border: 1px solid var(--line);
         padding: 6px 12px;
         border-radius: 6px;
-        display: none;
+        display: block; /* Visible hint so you know it's loaded */
         pointer-events: none;
         letter-spacing: 0.05em;
+        opacity: 0.7;
       }
 
       @media (max-width: 680px) {
@@ -169,7 +168,7 @@
   </head>
   <body>
     <canvas id="arcade-bg"></canvas>
-    <div id="arcade-hud">SCORE: 0 // [ TO EXIT</div>
+    <div id="arcade-hud">PRESS [ TO PLAY</div>
 
     <header class="topbar">
       <a href="index.html" class="brand">cade.is cool</a>
@@ -239,7 +238,7 @@
           player.y = height / 2;
           threats.length = 0;
           score = 0;
-          hud.style.display = 'block';
+          hud.style.opacity = '1';
           hud.textContent = `SCORE: 0 // [ TO EXIT`;
         }
 
@@ -249,22 +248,22 @@
           if (animId) cancelAnimationFrame(animId);
           animId = null;
           ctx.clearRect(0, 0, width, height);
-          if (msg) {
-            hud.style.display = 'block';
-            hud.textContent = msg;
-          } else {
-            hud.style.display = 'none';
-          }
+          hud.style.opacity = '0.7';
+          hud.textContent = msg || `PRESS [ TO PLAY`;
+        }
+
+        // Universal trigger supporting e.key '[' and e.code 'BracketLeft'
+        function isToggleKey(e) {
+          return e.key === '[' || e.key === ']' || e.code === 'BracketLeft' || e.code === 'BracketRight';
         }
 
         window.addEventListener('keydown', (e) => {
           if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
 
-          // Toggle on '['
-          if (e.key === '[') {
+          if (isToggleKey(e)) {
             e.preventDefault();
             if (running) {
-              stopGame();
+              stopGame(`PAUSED // PRESS [ TO RESUME`);
             } else {
               running = true;
               resetGame();
@@ -274,8 +273,9 @@
           }
 
           if (running) {
-            keys[e.key.toLowerCase()] = true;
-            if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'w', 'a', 's', 'd'].includes(e.key.toLowerCase())) {
+            const k = e.key.toLowerCase();
+            keys[k] = true;
+            if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'w', 'a', 's', 'd'].includes(k)) {
               e.preventDefault();
             }
           }
@@ -352,6 +352,4 @@
           for (let i = threats.length - 1; i >= 0; i--) {
             const t = threats[i];
 
-            // Continuously track player position every frame (homing)
             const angle = Math.atan2(player.y - t.y, player.x - t.x);
-            t.x += Math.cos(angle) * t.speed;
