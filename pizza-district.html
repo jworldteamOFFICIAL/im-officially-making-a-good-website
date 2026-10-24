@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pizza district</title>
+    <style>
+      :root {
+        --bg: #140f10;
+        --wall: #201a1a;
+        --counter: #d5a97a;
+        --counter-dark: #b96e3d;
+        --pizza: #f5d7a4;
+        --pizza-crust: #d29c5b;
+        --sauce: #d93838;
+        --cheese: #f7e6a3;
+        --pepperoni: #ba2d31;
+        --basil: #54b06c;
+        --olive: #2d3c2f;
+        --mushroom: #e7dfd5;
+        --metal: #b4bbc8;
+        --panel: rgba(28, 21, 21, 0.9);
+        --line: rgba(255, 255, 255, 0.08);
+        --text: #f9f3ea;
+        --muted: rgba(249, 243, 234, 0.74);
+        --gold: #f9d77d;
+        --accent: #ff7b59;
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        min-height: 100%;
+        background: linear-gradient(180deg, #120d0d 0%, #201919 100%);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .topbar {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 32px;
+        background: rgba(15, 12, 12, 0.88);
+        border-bottom: 1px solid var(--line);
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        backdrop-filter: blur(8px);
+      }
+
+      .brand {
+        text-decoration: none;
+        font-size: clamp(1.8rem, 3vw, 3.2rem);
+        font-weight: 900;
+        letter-spacing: -0.08em;
+        color: var(--gold);
+      }
+
+      .nav {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .nav a,
+      .nav button {
+        appearance: none;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: transparent;
+        color: var(--text);
+        padding: 10px 14px;
+        text-decoration: none;
+        font-size: 0.82rem;
+        letter-spacing: 0.04em;
+        text-transform: lowercase;
+        cursor: pointer;
+      }
+
+      .nav a:hover,
+      .nav button:hover {
+        border-color: rgba(249, 215, 125, 0.5);
+        color: var(--gold);
+      }
+
+      .page {
+        width: min(1200px, calc(100% - 32px));
+        margin: 30px auto 48px;
+      }
+
+      .title-block {
+        margin-bottom: 26px;
+        text-align: center;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        font-size: 0.75rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 10px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.7rem, 6vw, 6rem);
+        line-height: 0.9;
+        letter-spacing: -0.08em;
+        color: var(--gold);
+      }
+
+      .subtitle {
+        max-width: 760px;
+        margin: 16px auto 0;
+        color: var(--muted);
+        font-size: 1.05rem;
+        line-height: 1.7;
+      }
+
+      .kitchen {
+        display: grid;
+        grid-template-columns: minmax(0, 1.6fr) minmax(270px, 0.8fr);
+        gap: 24px;
+        align-items: start;
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 26px;
+        box-shadow: 0 24px 46px rgba(0, 0, 0, 0.26);
+      }
+
+      .station {
+        padding: 22px;
+      }
+
+      .station-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .station-header h2 {
+        margin: 0;
+        color: var(--gold);
+        font-size: clamp(1.4rem, 2vw, 2.2rem);
+        letter-spacing: -0.06em;
+      }
+
+      .score-box {
+        background: rgba(249, 215, 125, 0.12);
+        border: 1px solid rgba(249, 215, 125, 0.45);
+        color: var(--gold);
+        border-radius: 14px;
+        padding: 10px 12px;
+        min-width: 118px;
+        text-align: center;
+        font-weight: 700;
+      }
+
+      .pizza-zone {
+        position: relative;
+        min-height: 440px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+      }
+
+      .pizza-zone::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, rgba(255,255,255,0.02), transparent, rgba(255,255,255,0.02));
+      }
+
+      .pizza {
+        position: relative;
+        width: min(80vw, 300px);
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: radial-gradient(circle at 50% 45%, #f8e5bc 0%, var(--pizza) 34%, #e9c778 100%);
+        border: 18px solid var(--pizza-crust);
+        box-shadow: inset 0 0 24px rgba(80, 53, 15, 0.17), 0 18px 32px rgba(0,0,0,0.2);
+        transform: rotate(-3deg);
+      }
+
+      .pizza::before {
+        content: "";
+        position: absolute;
+        inset: 12%;
+        border-radius: 50%;
+        border: 2px dashed rgba(146, 96, 18, 0.45);
+      }
+
+      .topping {
+        position: absolute;
+        border-radius: 50%;
+        box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+        transform: translate(-50%, -50%);
+        opacity: 0.98;
+      }
+
+      .topping.sauce {
+        background: var(--sauce);
+      }
+
+      .topping.cheese {
+        background: var(--cheese);
+      }
+
+      .topping.pepperoni {
+        background: var(--pepperoni);
+      }
+
+      .topping.basil {
+        background: var(--basil);
+      }
+
+      .topping.olive {
+        background: var(--olive);
+      }
+
+      .topping.mushroom {
+        background: var(--mushroom);
+      }
+
+      .controls {
+        margin-top: 22px;
+        display: grid;
+        gap: 14px;
+      }
+
+      .ingredient-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(84px, 1fr));
+        gap: 10px;
+      }
+
+      .ingredient-btn,
+      .action-btn {
+        appearance: none;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        color: var(--text);
+        background: rgba(255,255,255,0.02);
+        padding: 12px 10px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+        transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+      }
+
+      .ingredient-btn:hover,
+      .action-btn:hover {
+        transform: translateY(-1px);
+        border-color: rgba(249, 215, 125, 0.6);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+      }
+
+      .ingredient-btn[data-ingredient="sauce"] { background: rgba(217, 56, 56, 0.12); }
+      .ingredient-btn[data-ingredient="cheese"] { background: rgba(247, 230, 163, 0.12); }
+      .ingredient-btn[data-ingredient="pepperoni"] { background: rgba(186, 45, 49, 0.12); }
+      .ingredient-btn[data-ingredient="basil"] { background: rgba(84, 176, 108, 0.1); }
+      .ingredient-btn[data-ingredient="olive"] { background: rgba(45, 60, 47, 0.2); }
+      .ingredient-btn[data-ingredient="mushroom"] { background: rgba(231, 223, 213, 0.12); }
+
+      .action-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .action-btn.primary {
+        background: linear-gradient(180deg, rgba(255, 123, 89, 0.2), rgba(255, 123, 89, 0.1));
+        border-color: rgba(255, 123, 89, 0.7);
+        color: #ffd8d1;
+      }
+
+      .action-btn.secondary {
+        background: rgba(255,255,255,0.02);
+      }
+
+      .side-panel {
+        padding: 20px;
+        display: grid;
+        gap: 18px;
+      }
+
+      .order-box,
+      .tv-box {
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.015);
+        border-radius: 18px;
+        padding: 16px;
+      }
+
+      .order-box h3,
+      .tv-box h3 {
+        margin: 0 0 12px;
+        font-size: 1.15rem;
+        color: var(--gold);
+        letter-spacing: -0.05em;
+      }
+
+      .recipe-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        min-height: 38px;
+      }
+
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 7px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.025);
+        font-size: 0.76rem;
+        letter-spacing: 0.04em;
+        text-transform: lowercase;
+      }
+
+      .status {
+        margin-top: 16px;
+        min-height: 58px;
+        padding: 10px 12px;
+        background: rgba(255,255,255,0.025);
+        border: 1px dashed rgba(255,255,255,0.14);
+        color: var(--muted);
+        border-radius: 12px;
+        line-height: 1.6;
+      }
+
+      .tv-box {
+        padding: 0;
+        overflow: hidden;
+      }
+
+      .tv-box h3 {
+        padding: 16px 16px 0;
+      }
+
+      .tv {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1.25;
+        background: linear-gradient(180deg, #0d1117 0%, #1a1d24 100%);
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        padding: 14px;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+      }
+
+      .tv:hover {
+        transform: translateY(-1px);
+      }
+
+      .tv-screen {
+        height: 100%;
+        border-radius: 10px;
+        background: radial-gradient(circle at center, #1a2638 0%, #0b0d13 46%, #06070a 100%);
+        border: 4px solid #2f3545;
+        position: relative;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+      }
+
+      .tv-screen::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          180deg,
+          rgba(255,255,255,0.04),
+          rgba(255,255,255,0.04) 2px,
+          transparent 2px,
+          transparent 5px
+        );
+        opacity: 0.35;
+      }
+
+      .tv-screen.live::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(178, 227, 255, 0.12), transparent 40%, rgba(255, 170, 89, 0.12));
+      }
+
+      .screen-copy {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        color: #dfeefb;
+        line-height: 1.8;
+        font-size: clamp(0.8rem, 1.3vw, 1.1rem);
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        max-width: 80%;
+      }
+
+      .screen-copy small {
+        display: block;
+        color: rgba(223, 238, 251, 0.72);
+        font-size: 0.7em;
+        letter-spacing: 0.12em;
+      }
+
+      @media (max-width: 920px) {
+        .kitchen {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .topbar {
+          flex-direction: column;
+          gap: 10px;
+          padding: 18px 14px;
+        }
+
+        .nav {
+          justify-content: center;
+        }
+
+        .station-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .ingredient-grid {
+          grid-template-columns: repeat(2, minmax(90px, 1fr));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <a href="index.html" class="brand">cade.is cool</a>
+      <nav class="nav" aria-label="Main navigation">
+        <a href="index.html">home</a>
+        <a href="about.html">about me</a>
+        <a href="terms.html">terms of service</a>
+        <button type="button" aria-label="Account">account</button>
+      </nav>
+    </header>
+
+    <main class="page">
+      <div class="title-block">
+        <span class="eyebrow">kitchen arcade</span>
+        <h1>pizza district</h1>
+        <p class="subtitle">
+          build the right pies, keep the kitchen moving, and click the tv to wake the feed. no videos uploaded yet, so the screen just waits for the next upload.
+        </p>
+      </div>
+
+      <div class="kitchen">
+        <section class="panel station" aria-label="Pizza game">
+          <div class="station-header">
+            <h2>pizza station</h2>
+            <div class="score-box" id="scoreBox">score: 0</div>
+          </div>
+
+          <div class="pizza-zone">
+            <div class="pizza" id="pizza" aria-live="polite"></div>
+          </div>
+
+          <div class="controls">
+            <div class="ingredient-grid" aria-label="Ingredient options">
+              <button class="ingredient-btn" type="button" data-ingredient="sauce">sauce</button>
+              <button class="ingredient-btn" type="button" data-ingredient="cheese">cheese</button>
+              <button class="ingredient-btn" type="button" data-ingredient="pepperoni">pepperoni</button>
+              <button class="ingredient-btn" type="button" data-ingredient="basil">basil</button>
+              <button class="ingredient-btn" type="button" data-ingredient="olive">olive</button>
+              <button class="ingredient-btn" type="button" data-ingredient="mushroom">mushroom</button>
+            </div>
+
+            <div class="action-row">
+              <button class="action-btn primary" id="bakeBtn" type="button">bake pie</button>
+              <button class="action-btn secondary" id="resetBtn" type="button">clear tray</button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel side-panel">
+          <div class="order-box">
+            <h3>rush order</h3>
+            <div class="recipe-list" id="recipeList" aria-live="polite"></div>
+            <div class="status" id="statusText">your kitchen is open. build a pizza and bake it.</div>
+          </div>
+
+          <div class="tv-box">
+            <h3>kitchen tv</h3>
+            <div class="tv" id="tvButton" role="button" tabindex="0" aria-label="Turn the kitchen TV on and off">
+              <div class="tv-screen" id="tvScreen">
+                <div class="screen-copy">
+                  video feed offline
+                  <small>click to wake</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <script>
+      const recipes = [
+        { name: 'classic', required: ['sauce', 'cheese', 'pepperoni'] },
+        { name: 'garden', required: ['sauce', 'cheese', 'basil', 'olive'] },
+        { name: 'mushroom melt', required: ['sauce', 'cheese', 'mushroom', 'olive'] },
+        { name: 'heat wave', required: ['sauce', 'cheese', 'pepperoni', 'basil'] }
+      ];
+
+      const ingredientTypes = {
+        sauce: { size: 28, color: 'sauce' },
+        cheese: { size: 18, color: 'cheese' },
+        pepperoni: { size: 24, color: 'pepperoni' },
+        basil: { size: 22, color: 'basil' },
+        olive: { size: 14, color: 'olive' },
+        mushroom: { size: 26, color: 'mushroom' }
+      };
+
+      const pizzaEl = document.getElementById('pizza');
+      const recipeList = document.getElementById('recipeList');
+      const statusText = document.getElementById('statusText');
+      const scoreBox = document.getElementById('scoreBox');
+      const bakeBtn = document.getElementById('bakeBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const tvButton = document.getElementById('tvButton');
+      const tvScreen = document.getElementById('tvScreen');
+
+      let currentRecipe = null;
+      let currentPizza = [];
+      let score = 0;
+
+      function chooseRecipe() {
+        currentRecipe = recipes[Math.floor(Math.random() * recipes.length)];
+        currentPizza = [];
+        renderPizza();
+        renderRecipe();
+        statusText.textContent = `make a ${currentRecipe.name} pie. keep it clean and quick.`;
+      }
+
+      function renderRecipe() {
+        recipeList.innerHTML = currentRecipe.required
+          .map((item) => `<span class="chip">${item}</span>`)
+          .join('');
+      }
+
+      function renderPizza() {
+        pizzaEl.innerHTML = '';
+
+        const toppings = currentPizza.length ? currentPizza : [];
+
+        toppings.forEach((item, index) => {
+          const config = ingredientTypes[item];
+          const topping = document.createElement('span');
+          topping.className = `topping ${item}`;
+
+          const angle = (index / Math.max(toppings.length, 1)) * Math.PI * 2 + (index % 2 === 0 ? 0.7 : 1.4);
+          const radius = 26 + (index % 4) * 12 + (item === 'sauce' ? 12 : 0);
+          const x = 50 + Math.cos(angle) * radius;
+          const y = 50 + Math.sin(angle) * radius;
+
+          topping.style.width = `${config.size}px`;
+          topping.style.height = `${config.size}px`;
+          topping.style.left = `${x}%`;
+          topping.style.top = `${y}%`;
+
+          if (item === 'pepperoni' || item === 'olive') {
+            topping.style.borderRadius = '50%';
+          }
+
+          if (item === 'basil') {
+            topping.style.width = '22px';
+            topping.style.height = '22px';
+          }
+
+          if (item === 'mushroom') {
+            topping.style.width = '28px';
+            topping.style.height = '18px';
+            topping.style.borderRadius = '46%';
+          }
+
+          pizzaEl.appendChild(topping);
+        });
+      }
+
+      function addIngredient(name) {
+        currentPizza.push(name);
+        if (currentPizza.length > 8) {
+          currentPizza.shift();
+        }
+        renderPizza();
+
+        const isGood = currentRecipe.required.includes(name);
+        statusText.textContent = isGood
+          ? `nice. ${name} fits the order.`
+          : `extra ${name} on there. keep it on brand.`;
+      }
+
+      function clearPizza() {
+        currentPizza = [];
+        renderPizza();
+        statusText.textContent = 'tray cleared. start a fresh pie.';
+      }
+
+      function bakePizza() {
+        if (!currentPizza.length) {
+          statusText.textContent = 'you need toppings before baking.';
+          return;
+        }
+
+        const required = currentRecipe.required;
+        const missing = required.filter((item) => !currentPizza.includes(item));
+        const extras = currentPizza.filter((item) => !required.includes(item));
+
+        if (!missing.length && !extras.length) {
+          const reward = 150 + required.length * 35;
+          score += reward;
+          scoreBox.textContent = `score: ${score}`;
+          statusText.textContent = `perfect! ${currentRecipe.name} served for +${reward}.`;
+          chooseRecipe();
+          return;
+        }
+
+        score = Math.max(0, score - 25);
+        scoreBox.textContent = `score: ${score}`;
+
+        const messageParts = [];
+        if (missing.length) {
+          messageParts.push(`missing ${missing.join(', ')}`);
+        }
+        if (extras.length) {
+          messageParts.push(`extra ${extras.join(', ')}`);
+        }
+
+        statusText.textContent = `close, but ${messageParts.join(' and ')}. try again.`;
+        currentPizza = [];
+        renderPizza();
+      }
+
+      document.querySelectorAll('.ingredient-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+          addIngredient(button.dataset.ingredient);
+        });
+      });
+
+      bakeBtn.addEventListener('click', bakePizza);
+      resetBtn.addEventListener('click', clearPizza);
+
+      tvButton.addEventListener('click', () => {
+        tvScreen.classList.toggle('live');
+        const isLive = tvScreen.classList.contains('live');
+        const copy = document.querySelector('.screen-copy');
+
+        if (isLive) {
+          copy.innerHTML = 'video queue<br><small>upload later</small>';
+        } else {
+          copy.innerHTML = 'video feed offline<br><small>click to wake</small>';
+        }
+      });
+
+      tvButton.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          tvButton.click();
+        }
+      });
+
+      scoreBox.textContent = `score: ${score}`;
+      chooseRecipe();
+    </script>
+  </body>
+</html>
