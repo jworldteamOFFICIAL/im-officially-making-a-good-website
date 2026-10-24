@@ -152,6 +152,13 @@
         font-weight: 800;
       }
 
+      .project-links {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
       .project-button {
         display: inline-block;
         padding: 16px 22px;
@@ -233,7 +240,10 @@
 
         <section class="projects-section" aria-label="Projects section">
           <h2>explore projects</h2>
-          <a class="project-button" href="clarinet.cade.html" target="_blank" rel="noopener noreferrer">clarinet.cade</a>
+          <div class="project-links">
+            <a class="project-button" href="clarinet.cade.html" target="_blank" rel="noopener noreferrer">clarinet.cade</a>
+            <a class="project-button" href="coding.cade.html" target="_blank" rel="noopener noreferrer">coding.cade</a>
+          </div>
         </section>
       </div>
     </main>
